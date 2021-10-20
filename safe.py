@@ -47,8 +47,14 @@ class KeyStorage:
         if not public_keys:
             raise Exception(f'Key for user with email: {email} not found')
 
+        key_id = public_keys[0]['keyid']
+        local_key_ids = [key['keyid'] for key in self.gpg.list_keys()]
+
+        if key_id not in local_key_ids:
+            self.gpg.recv_keys(_KEYS_SERVER, key_id)
+
         return Key(
-            key_id=public_keys[0]['keyid'],
+            key_id=key_id,
             owner=public_keys[0]['uids'][0].split('<')[0].rstrip(),
             email=public_keys[0]['uids'][0].split('<')[1].split('>')[0],
         )
@@ -63,7 +69,7 @@ def _encrypt_message(message: str, destination_email: str) -> str:
     gpg = gnupg.GPG()
     key_storage = KeyStorage(gpg)
     key = key_storage.get_key(destination_email)
-    encryted_message = gpg.encrypt(message, [key.key_id])
+    encryted_message = gpg.encrypt(message, [key.key_id], always_trust=True)
     base_64_message = base64.b64encode(encryted_message.data)
     return base_64_message.decode('utf-8')
 

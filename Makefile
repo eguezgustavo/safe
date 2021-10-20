@@ -7,3 +7,8 @@ install:
 	@cat ./safe.py >> /usr/local/bin/safe
 	@chmod +x /usr/local/bin/safe
 	echo "Safe is intalled, run safe --help to obtain details"
+
+uninstall:
+	rm /usr/local/bin/safe
+	pip uninstall -r requirements.txt
+	echo "Safe has been uninstalled"
