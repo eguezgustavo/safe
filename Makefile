@@ -1,7 +1,8 @@
 # A=$(which python3)
 PYTHON_3_PATH=$(shell which python3)
 
-install:	
+install:
+	export GPG_TTY=$(tty)
 	@echo \#!$(PYTHON_3_PATH) > /usr/local/bin/safe
 	@pip install -r requirements.txt
 	@cat ./safe.py >> /usr/local/bin/safe
